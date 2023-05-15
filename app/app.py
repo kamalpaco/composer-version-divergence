@@ -25,13 +25,15 @@ def create_dependency_graph(files):
 
 def visualize_dependency_graph(graph, output_file):
     pos = nx.spring_layout(graph)
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(24, 16))
     nx.draw_networkx(graph, pos, node_size=1000, node_color='lightblue', font_size=10, font_weight='bold', with_labels=True)
     edge_labels = nx.get_edge_attributes(graph, 'version_constraint')
-    nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels, font_size=8)
+    nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels, font_size=12, label_pos=0.5, font_color='red')
     plt.title("Divergence of Library Versions")
     plt.axis('off')
+    plt.tight_layout()
     plt.savefig(output_file)
+    plt.close()
 
 if __name__ == "__main__":
     directory = "projects/"
