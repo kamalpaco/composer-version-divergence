@@ -1,0 +1,7 @@
+{
+	"description":"The App",
+	"name": "projects/myapp",
+	"require": {
+		"php": ">=7.4.0"
+	}
+}

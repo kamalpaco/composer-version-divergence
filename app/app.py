@@ -7,14 +7,14 @@ import sys
 def parse_composer_json(file_path):
     with open(file_path) as f:
         data = json.load(f)
-        package_name = data.get('name', '')
-        package_version = data.get('version', '')
-        return package_name, package_version
+        return data
 
 def create_dependency_graph(files):
     graph = nx.DiGraph()
     for file in files:
-        package_name, package_version = parse_composer_json(file)
+        data = parse_composer_json(file)
+        package_name = data.get('name', '')
+        package_version = data.get('version', '')
         graph.add_node(package_name, version=package_version)
 
         require = parse_composer_json(file).get('require', {})
@@ -23,7 +23,7 @@ def create_dependency_graph(files):
     
     return graph
 
-def visualize_dependency_graph(graph):
+def visualize_dependency_graph(graph, output_file):
     pos = nx.spring_layout(graph)
     plt.figure(figsize=(12, 8))
     nx.draw_networkx(graph, pos, node_size=1000, node_color='lightblue', font_size=10, font_weight='bold', with_labels=True)
@@ -31,15 +31,10 @@ def visualize_dependency_graph(graph):
     nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels, font_size=8)
     plt.title("Divergence of Library Versions")
     plt.axis('off')
-    plt.show()
+    plt.savefig(output_file)
 
 if __name__ == "__main__":
-    # Obtener el directorio de archivos composer.json de la línea de comandos
-    if len(sys.argv) < 2:
-        print("Advertencia: No se proporcionó un directorio para evaluar.")
-        print("Por favor, ejecute el script nuevamente y proporcione un directorio válido.")
-        sys.exit(1)
-
+    directory = "projects/"
     
     if not os.path.isdir(directory):
         print("Advertencia: El directorio proporcionado no existe.")
@@ -53,5 +48,7 @@ if __name__ == "__main__":
         print("Por favor, coloque los archivos composer.json en el directorio y ejecute el script nuevamente.")
         sys.exit(1)
 
+    output_file = "dependency_graph.png"
     dependency_graph = create_dependency_graph(composer_files)
-    visualize_dependency_graph(dependency_graph)
+    visualize_dependency_graph(dependency_graph, output_file)
+    print(f"El gráfico de dependencias se ha guardado en {output_file}.")
